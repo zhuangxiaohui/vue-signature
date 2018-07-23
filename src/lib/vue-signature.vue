@@ -1,6 +1,6 @@
 <template>
 	<div :style="{width:w,height:h}">
-		<canvas :id="uid" class="canvas" :data-uid="uid"></canvas>
+		<canvas :id="uid" class="canvas" :data-uid="uid"  v-on="listeners"></canvas>
 	</div>
 
 </template>
@@ -30,7 +30,8 @@
 			clearOnResize:{
 				type:Boolean,
 				default:false
-			}
+			},
+    			format: String
 		},
 		data(){
 			return {
@@ -42,6 +43,15 @@
 				uid:""
 			}
 		},
+		computed: {
+		    listeners() {
+		      return {
+			...this.$listeners,
+			touchend: this.onChange,
+			mouseover: this.onChange
+		      }
+		    }
+		},
 		created(){
 			var _this = this;
 			this.uid = "canvas" + _this._uid
@@ -51,6 +61,12 @@
 			}
 		},
 		methods:{
+		   	onChange() {
+			   this.$emit('change', this.getData())
+			},
+			getData() {
+			   return this.sig.toDataURL(this.format)
+			},
 			draw(){
 				var _this = this;
 				var canvas = document.getElementById(_this.uid)
